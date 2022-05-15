@@ -1,9 +1,9 @@
 from flask import render_template, Blueprint, request
-from functions import search
 import logging
-from main.utils import *
+
 from config import POST_PATH
-from exception import *
+from main.utils import *
+from exceptions import *
 
 main_blueprint = Blueprint("main_blueprint", __name__, template_folder="templates")
 
@@ -12,17 +12,18 @@ logging.basicConfig(filename="logger.log", level=logging.INFO)
 
 @main_blueprint.route('/')
 def main_page():
-    "Главная страница"
+    """Главная страница"""
     logging.info("Открытие главной страницы")
     return render_template("index.html")
 
 
-@main_blueprint.route('/search/')
+@main_blueprint.route('/search')
 def search_page():
+    """Поиск и вывод постов"""
     s = request.args.get("s", "").lower()
     logging.info("Выполняется поиск")
     try:
-        posts = load_json_data("posts.json")
+        posts = load_json_data(POST_PATH)
     except DataJsonError:
         return "Проблема с открытием файла постов"
     filtered_posts = search_post_by_substring(posts, s)
